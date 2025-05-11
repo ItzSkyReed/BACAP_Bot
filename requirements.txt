@@ -1,0 +1,8 @@
+aiosqlite
+sqlalchemy~=2.0.40
+httpx
+pillow~=11.2.1
+requests~=2.32.3
+py-cord
+BACAP_Parser~=0.5.5
+python-dotenv
