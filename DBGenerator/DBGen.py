@@ -25,13 +25,13 @@ def __load_parser():
     manager = AdvTypeManager(task, goal, challenge, super_challenge, root, milestone, advancement_legend)
     terralith_manager = AdvTypeManager(task_terralith, goal, challenge_terralith, super_challenge, root, milestone, advancement_legend)
 
-    bacap = Datapack(name="bacap", path=Path(ASSETS_FOLDER / r"datapacks\bacap"), adv_type_manager=manager, reward_namespace="bacap_rewards", technical_tabs="technical")
+    bacap = Datapack(name="bacap", path=Path(ASSETS_FOLDER / r"datapacks/bacap"), adv_type_manager=manager, reward_namespace="bacap_rewards", technical_tabs="technical")
     bacaped = Datapack(name="bacaped", path=Path(ASSETS_FOLDER / "datapacks/bacaped"), adv_type_manager=manager, reward_namespace="bacaped_rewards", technical_tabs="technical")
 
-    bacap_hardcore = Datapack(name="bacap_hardcore", path=Path(ASSETS_FOLDER / r"datapacks\bacap_hardcore"), adv_type_manager=manager, technical_tabs="technical")
-    bacap_terralith = Datapack(name="bacap_terralith", path=Path(ASSETS_FOLDER / r"datapacks\bacap_terralith"), adv_type_manager=terralith_manager, technical_tabs="technical")
-    bacap_nullscapes = Datapack(name="bacap_nullscapes", path=Path(ASSETS_FOLDER / r"datapacks\bacap_nullscapes"), adv_type_manager=manager, technical_tabs="technical")
-    bacap_amplified_nether = Datapack(name="bacap_amplified_nether", path=Path(ASSETS_FOLDER / r"datapacks\bacap_amplified_nether"), adv_type_manager=manager, technical_tabs="technical")
+    bacap_hardcore = Datapack(name="bacap_hardcore", path=Path(ASSETS_FOLDER / r"datapacks/bacap_hardcore"), adv_type_manager=manager, technical_tabs="technical")
+    bacap_terralith = Datapack(name="bacap_terralith", path=Path(ASSETS_FOLDER / r"datapacks/bacap_terralith"), adv_type_manager=terralith_manager, technical_tabs="technical")
+    bacap_nullscapes = Datapack(name="bacap_nullscapes", path=Path(ASSETS_FOLDER / r"datapacks/bacap_nullscapes"), adv_type_manager=manager, technical_tabs="technical")
+    bacap_amplified_nether = Datapack(name="bacap_amplified_nether", path=Path(ASSETS_FOLDER / r"datapacks/bacap_amplified_nether"), adv_type_manager=manager, technical_tabs="technical")
 
     bacaped_hardcore = Datapack(name="bacaped_hardcore", path=Path(ASSETS_FOLDER / "datapacks/bacaped_hardcore"), adv_type_manager=manager, reward_namespace="bacaped_rewards",
                                 technical_tabs="technical")
