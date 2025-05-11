@@ -25,7 +25,7 @@ def get_token():
     return token
 
 if __name__ == "__main__":
-    #pre_loading()
+    pre_loading()
 
     bot = discord.Bot(intents=discord.Intents.all())
     bot.load_extension("cogs.AdvancementCog")
