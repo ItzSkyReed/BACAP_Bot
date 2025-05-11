@@ -3,8 +3,8 @@ from collections.abc import Mapping
 import BACAP_Parser
 import discord
 
-from src.Database import DB_Advancement
-from src.common import to_title_style
+from Database import DB_Advancement
+from common import to_title_style
 
 
 def format_enchantments(enchantments: Mapping[str, int]) -> str:

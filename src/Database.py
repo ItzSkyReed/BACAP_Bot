@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from sqlalchemy.orm import declarative_base, relationship, selectinload
 from sqlalchemy import Column, Integer, String, BLOB, select, func, ForeignKey, Boolean, Float, case, JSON
 
-from src.DBGenerator.DatabaseController import DatabaseController
+from DBGenerator.DatabaseController import DatabaseController
 
 DATABASE_URL = f"sqlite+aiosqlite:///{DatabaseController.get_current_db()}"
 engine = create_async_engine(DATABASE_URL, echo=False)

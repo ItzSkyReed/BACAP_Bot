@@ -1,6 +1,6 @@
 import discord
 
-from src.Protocols.SupportsCleanup import SupportsCleanup
+from Protocols.SupportsCleanup import SupportsCleanup
 
 
 class CleanupView(discord.ui.View):

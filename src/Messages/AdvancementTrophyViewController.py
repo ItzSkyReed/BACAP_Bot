@@ -2,14 +2,14 @@ from io import BytesIO
 
 import discord
 
-from src.Buttons.ToAdvancementButton import ToAdvancementButton
-from src.Buttons.ParentAdvancementButton import ParentAdvancementButton
-from src.Buttons.TrophyButton import TrophyButton
-from src.Database import DB_Advancement
-from src.Embeds.AdvancementEmbed import AdvancementEmbed
-from src.Embeds.TrophyEmbed import TrophyEmbed
-from src.Protocols.SupportsCleanup import SupportsCleanup
-from src.Views.CleanupView import CleanupView
+from Buttons.ToAdvancementButton import ToAdvancementButton
+from Buttons.ParentAdvancementButton import ParentAdvancementButton
+from Buttons.TrophyButton import TrophyButton
+from Database import DB_Advancement
+from Embeds.AdvancementEmbed import AdvancementEmbed
+from Embeds.TrophyEmbed import TrophyEmbed
+from Protocols.SupportsCleanup import SupportsCleanup
+from Views.CleanupView import CleanupView
 
 
 class AdvancementTrophyViewController(SupportsCleanup):

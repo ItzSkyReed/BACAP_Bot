@@ -3,9 +3,9 @@ from typing import Literal
 import discord
 from discord.ext import commands
 
-from src.Database import DB_Advancement
-from src.Messages.AdvancementTrophyViewController import AdvancementTrophyViewController
-from src.common import error_embed
+from Database import DB_Advancement
+from Messages.AdvancementTrophyViewController import AdvancementTrophyViewController
+from common import error_embed
 
 
 async def title_autocomplete(context: discord.AutocompleteContext):

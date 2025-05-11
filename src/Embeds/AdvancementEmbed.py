@@ -1,7 +1,7 @@
 import discord
 
-from src.Database import DB_Advancement
-from src.common import format_float, to_title_style, format_time
+from Database import DB_Advancement
+from common import format_float, to_title_style, format_time
 
 
 class AdvancementEmbed(discord.Embed):

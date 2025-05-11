@@ -8,7 +8,7 @@ import os
 
 from dotenv import load_dotenv
 
-from src.DBGenerator.DatabaseController import DatabaseController
+from DBGenerator.DatabaseController import DatabaseController
 
 
 def pre_loading():
