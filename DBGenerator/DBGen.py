@@ -136,15 +136,19 @@ def _load_adv_with_rewards(adv: BACAP_Parser.Advancement, datapack_name: str, pa
         ).id
 
     wb_data = WBAddonParser.get_blocks_seconds(adv)
-    wb_db = DB_WB_Addon()
+    wb_db_id = None
+    if wb_data:
+        wb_db = DB_WB_Addon()
 
-    if wb_data.get("BACAP"):
-        wb_db.bacap_blocks = wb_data["BACAP"][0]
-        wb_db.bacap_seconds = wb_data["BACAP"][1]
+        if wb_data.get("BACAP"):
+            wb_db.bacap_blocks = wb_data["BACAP"][0]
+            wb_db.bacap_seconds = wb_data["BACAP"][1]
 
-    if wb_data.get("ED"):
-        wb_db.ed_blocks = wb_data["ED"][0]
-        wb_db.ed_seconds = wb_data["ED"][1]
+        if wb_data.get("ED"):
+            wb_db.ed_blocks = wb_data["ED"][0]
+            wb_db.ed_seconds = wb_data["ED"][1]
+        wb_db_id = __save_wb_sync(wb_db).id
+
 
     __save_advancement_sync(
         DB_Advancement(
@@ -163,7 +167,7 @@ def _load_adv_with_rewards(adv: BACAP_Parser.Advancement, datapack_name: str, pa
             exp_count=adv.exp.value if adv.exp else None,
             trophy_id=trophy_id,
             reward_id=reward_id,
-            wb_addon_id=__save_wb_sync(wb_db).id
+            wb_addon_id=wb_db_id
         ))
 
 
