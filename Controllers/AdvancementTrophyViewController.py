@@ -17,10 +17,19 @@ class AdvancementTrophyViewController(SupportsCleanup):
         self._original_message = None
         self._advancement = advancement
         self._view = CleanupView(owner=self, timeout=300)
-        # We create buttons once, yes, even if it doesn't have any parents!
-        self._parent_button = ParentAdvancementButton(callback=self.on_parent_button_click)
-        self._trophy_button = TrophyButton(callback=self.on_trophy_button_click)
-        self._back_to_advancement_button = ToAdvancementButton(callback=self.on_back_to_advancement_button_click)
+
+        self._trophy_button = None
+        self._parent_button = None
+        self._back_to_advancement_button = None
+
+        if self._advancement.parent_id:
+            self._parent_button = ParentAdvancementButton(callback=self.on_parent_button_click) # We load parent button only if parent exists
+            self._trophy_button = TrophyButton(callback=self.on_trophy_button_click) # We always load trophy button in this case, yes.
+            self._back_to_advancement_button = ToAdvancementButton(callback=self.on_back_to_advancement_button_click) # Same for this button
+        elif self._advancement.trophy_id:
+                self._trophy_button = TrophyButton(callback=self.on_trophy_button_click) # We load trophy for advancement without parents only if trophy exists
+                self._back_to_advancement_button = ToAdvancementButton(callback=self.on_back_to_advancement_button_click) # Same for this button
+
         self._file = None
 
     def _update_advancement_view(self):
