@@ -111,10 +111,14 @@ def __format_enchantments(obj: dict[str, int]):
 def _load_adv_with_rewards(adv: BACAP_Parser.Advancement, datapack_name: str, parent_id: int | None = 0):
     trophy_id = None
     if adv.trophy:
+
         trophy_enchantments = adv.trophy.item.components.get("enchantments")
         if trophy_enchantments:
             trophy_enchantments = __format_enchantments(trophy_enchantments)
+
         trophy_icon = IconGenerator.get_trophy_icon(adv.trophy.item)
+        unbreakable = True if adv.trophy.item.components.get("unbreakable") else False
+
         trophy_id = __save_trophy_sync(
             Database.DB_Trophy(
                 name=adv.trophy.item.name,
@@ -122,7 +126,8 @@ def _load_adv_with_rewards(adv: BACAP_Parser.Advancement, datapack_name: str, pa
                 color=adv.trophy.item.color.as_int,
                 item_id=cut_namespace(adv.trophy.item.id),
                 icon=trophy_icon,
-                enchantments=trophy_enchantments
+                enchantments=trophy_enchantments,
+                unbreakable=unbreakable
             )
         ).id
 

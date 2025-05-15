@@ -29,6 +29,9 @@ class TrophyEmbed(discord.Embed):
 
         self.add_field(name="Item:", value=to_title_style(advancement.trophy.item_id), inline=False)
 
+        if advancement.trophy.unbreakable:
+            self.add_field(name="Unbreakable", value="")
+
         if advancement.trophy.enchantments:
             self.add_field(name="Enchantments:", value=format_enchantments(advancement.trophy.enchantments), inline=False)
 

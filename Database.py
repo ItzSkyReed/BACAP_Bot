@@ -178,6 +178,7 @@ class DB_Trophy(Base):
     item_id = Column(String, nullable=False)
     icon = Column(BLOB, nullable=False)
     enchantments = Column(JSON, nullable=True)
+    unbreakable = Column(Boolean, nullable=False, default=False)
     advancement = relationship("DB_Advancement", back_populates="trophy", uselist=False)
 
     @connection
