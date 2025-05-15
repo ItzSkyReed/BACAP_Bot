@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from Database import DB_Advancement
-from Messages.AdvancementTrophyViewController import AdvancementTrophyViewController
+from Controllers.AdvancementTrophyViewController import AdvancementTrophyViewController
 from common import error_embed
 
 
