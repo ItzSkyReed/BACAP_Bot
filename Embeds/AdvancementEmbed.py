@@ -30,7 +30,7 @@ class AdvancementEmbed(discord.Embed):
             self.add_field(name='Addon', value=advancement.datapack)
 
         if advancement.reward_id:
-            self.add_field(name='Reward', value=f"{advancement.reward.item_id.replace("_", " ").title()}: {advancement.reward.amount}")
+            self.add_field(name='Reward', value=f"{to_title_style(advancement.reward.item_id)}: {advancement.reward.amount}")
 
         if advancement.trophy_id:
             self.add_field(name='Trophy', value=advancement.trophy.name)
