@@ -51,8 +51,8 @@ class RandomAdvController(SearchAdvController):
             self._view.add_item(self._reroll_advancement_button)
 
     async def cleanup(self):
-        await super().cleanup()
         self._suitable_adv_count = None
         self._excluded_ids = None
         self._search_params = None
         self._reroll_advancement_button = None
+        await super().cleanup()
