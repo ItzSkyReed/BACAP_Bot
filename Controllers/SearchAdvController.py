@@ -10,11 +10,11 @@ from Embeds.AdvancementEmbed import AdvancementEmbed
 from Embeds.TrophyEmbed import TrophyEmbed
 from Protocols.SupportsCleanup import SupportsCleanup
 from Views.CleanupView import CleanupView
+from common import error_embed
 
-
-class AdvancementTrophyViewController(SupportsCleanup):
+class SearchAdvController(SupportsCleanup):
     def __init__(self, advancement: DB_Advancement):
-        self._original_message = None
+        self._original_message: discord.InteractionMessage | None = None
         self._advancement = advancement
         self._view = CleanupView(owner=self, timeout=300)
 
@@ -31,6 +31,9 @@ class AdvancementTrophyViewController(SupportsCleanup):
                 self._back_to_advancement_button = ToAdvancementButton(callback=self.on_back_to_advancement_button_click) # Same for this button
 
         self._file = None
+
+    def _is_author_interaction(self, interaction: discord.Interaction) -> bool:
+        return interaction.user.id == self._original_message.interaction_metadata.user.id
 
     def _update_advancement_view(self):
 
@@ -80,26 +83,36 @@ class AdvancementTrophyViewController(SupportsCleanup):
         await ctx.respond(embed=self._current_embed, view=self._view, file=self._file)
         self._original_message = await ctx.interaction.original_response()
 
-    async def send_trophy_view(self, ctx):
+    async def send_trophy_view(self, ctx: discord.ApplicationContext):
         self._update_trophy_view()
         await ctx.respond(embed=self._current_embed, view=self._view, file=self._file)
+        self._author = ctx.author
         self._original_message = await ctx.interaction.original_response()
 
     async def on_parent_button_click(self, interaction: discord.Interaction):
+        if not self._is_author_interaction(interaction):
+            return await interaction.respond(embed=error_embed(title="Only author of the command can do that!"), ephemeral=True)
+
         self._advancement = await self._advancement.get_adv_by_id(self._advancement.parent_id)
 
         self._update_advancement_view()
 
-        await interaction.edit(embed=self._current_embed, view=self._view, file=self._file)
+        return await interaction.edit(embed=self._current_embed, view=self._view, file=self._file)
 
     async def on_trophy_button_click(self, interaction: discord.Interaction):
+        if not self._is_author_interaction(interaction):
+            return await interaction.respond(embed=error_embed(description="Only author of the command can do that", title="Oops!"), ephemeral=True)
+
         self._update_trophy_view()
 
-        await interaction.edit(embed=self._current_embed, view=self._view, file=self._file)
+        return await interaction.edit(embed=self._current_embed, view=self._view, file=self._file)
 
     async def on_back_to_advancement_button_click(self, interaction: discord.Interaction):
+        if not self._is_author_interaction(interaction):
+            return await interaction.respond(embed=error_embed(description="Only author of the command can do that", title="Oops!"), ephemeral=True)
+
         self._update_advancement_view()
-        await interaction.edit(embed=self._current_embed, view=self._view, file=self._file)
+        return await interaction.edit(embed=self._current_embed, view=self._view, file=self._file)
 
     async def cleanup(self):
         await self._original_message.edit(view=self._view)
