@@ -115,11 +115,11 @@ class SearchAdvController(SupportsCleanup):
         return await interaction.edit(embed=self._current_embed, view=self._view, file=self._file)
 
     async def cleanup(self):
-        await self._original_message.edit(view=self._view)
-        self._original_message = None
         self._view = None
         self._parent_button = None
         self._trophy_button = None
         self._back_to_advancement_button = None
         self._advancement = None
         self._file = None
+        await self._original_message.edit(view=self._view)
+        self._original_message = None
