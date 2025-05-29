@@ -5,3 +5,4 @@ requests~=2.32.3
 py-cord
 BACAP_Parser~=0.5.5
 python-dotenv
+openpyxl

@@ -31,7 +31,7 @@ def get_token():
     return token
 
 if __name__ == "__main__":
-    if not "--test" in sys.argv:
+    if "--test" in sys.argv:
         pre_loading()
 
 
