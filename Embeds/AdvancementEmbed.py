@@ -1,7 +1,8 @@
 import discord
-
+import bisect
 from Database import DB_Advancement
 from common import format_float, to_title_style, format_time
+from constants import EXP_EMOJIS
 
 
 class AdvancementEmbed(discord.Embed):
@@ -24,7 +25,7 @@ class AdvancementEmbed(discord.Embed):
         self.add_field(name='Hidden?', value="Yes" if advancement.is_hidden else "No")
 
         if advancement.exp_count:
-            self.add_field(name='Experience', value=str(advancement.exp_count))
+            self.add_field(name='Experience', value=f"{advancement.exp_count} {self._get_exp_emoji(advancement.exp_count)}")
 
         if advancement.is_addon:
             self.add_field(name='Addon', value=advancement.datapack)
@@ -58,6 +59,13 @@ class AdvancementEmbed(discord.Embed):
                 value="```\n" + "\n".join(lines) + "\n```",
                 inline=False
             )
+
+    @staticmethod
+    def _get_exp_emoji(exp_count: int) -> str:
+        thresholds = [2, 6, 16, 36, 72, 148, 306, 616, 1236, 2476, float("inf")]
+
+        index = bisect.bisect_right(thresholds, exp_count)
+        return EXP_EMOJIS[index]
 
     def _add_alt_descriptions(self, advancement: DB_Advancement):
         alt_desc = advancement.alt_descriptions
