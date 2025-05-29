@@ -1,8 +1,8 @@
 import asyncio
-from typing import Self
+from typing import Self, TypedDict, Unpack
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import declarative_base, relationship, selectinload
+from sqlalchemy.orm import declarative_base, relationship, selectinload, InstrumentedAttribute
 from sqlalchemy import Column, Integer, String, BLOB, select, func, ForeignKey, Boolean, Float, case, JSON, distinct, Sequence, Select
 
 from DBGenerator.DatabaseController import DatabaseController
@@ -28,12 +28,27 @@ def connection(method):
     return wrapper
 
 
+class AdvSearchFilters(TypedDict, total=False):
+    title: str
+    description: str
+    adv_type: str
+    tab: str
+    datapack: str
+    is_hidden: bool
+    has_exp: bool
+    has_reward: bool
+    has_trophy: bool
+    randomize: bool
+    excluded_ids: list[int]
+
+
 class DB_Advancement(Base):
     __tablename__ = "Advancement"
 
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False, index=True)
     description = Column(String, nullable=False, index=True)
+    actual_requirements = Column(String, nullable=True)
     icon = Column(BLOB, nullable=False)
     type = Column(String, nullable=False, index=True)
     tab = Column(String, nullable=False, index=True)
@@ -68,6 +83,7 @@ class DB_Advancement(Base):
             adv_type: str | None = None,
             tab: str | None = None,
             datapack: str | None = None,
+            is_hidden: bool | None = None,
             has_exp: bool | None = None,
             has_reward: bool | None = None,
             has_trophy: bool | None = None,
@@ -85,7 +101,7 @@ class DB_Advancement(Base):
 
             if not randomize:
                 relevance = case(
-                    (title_col == title_lower, 1),
+                    (title_lower == title_col, 1),
                     (title_col.like(title_lower + ' %'), 2),
                     (title_col.like(title_lower + '%'), 3),
                     (title_col.like('% ' + title_lower + ' %'), 4),
@@ -105,6 +121,9 @@ class DB_Advancement(Base):
         if adv_type:
             filters.append(func.lower(cls.type).like(f"%{adv_type.lower()}%"))
 
+        if is_hidden is not None:
+            filters.append(cls.is_hidden.is_(is_hidden))
+
         if has_exp is not None:
             filters.append(cls.exp_count.isnot(None) if has_exp else cls.exp_count.is_(None))
 
@@ -120,31 +139,14 @@ class DB_Advancement(Base):
         return filters, relevance
 
     @classmethod
-    def _build_adv_search_stmt(
-            cls,
-            title: str | None = None,
-            description: str | None = None,
-            adv_type: str | None = None,
-            tab: str | None = None,
-            datapack: str | None = None,
-            has_exp: bool | None = None,
-            has_reward: bool | None = None,
-            has_trophy: bool | None = None,
-            limit: int = 25,
-            load_related: bool = False,
-            randomize: bool = False,
-            excluded_ids: list[int] | None = None
-    ) -> Select[tuple[Self]]:
-
-        filters, relevance = cls._build_filters(
-            title=title, description=description, adv_type=adv_type, tab=tab, datapack=datapack, has_exp=has_exp,
-            has_reward=has_reward, has_trophy=has_trophy, randomize=randomize, excluded_ids=excluded_ids)
+    def _build_adv_search_stmt(cls, limit: int = 25, load_related: bool = False, **adv_filters: Unpack[AdvSearchFilters]) -> Select[tuple[Self]]:
+        filters, relevance = cls._build_filters(**adv_filters)
 
         stmt = select(cls).where(*filters)
 
-        if title and not randomize and relevance is not None:
+        if adv_filters.get('title') and not adv_filters.get('randomize') and relevance is not None:
             stmt = stmt.order_by(relevance)
-        elif randomize:
+        elif adv_filters.get('randomize'):
             stmt = stmt.order_by(func.random())
 
         stmt = stmt.limit(limit)
@@ -162,71 +164,22 @@ class DB_Advancement(Base):
 
     @classmethod
     @connection
-    async def search_without_relations(
-            cls, title: str | None = None,
-            description: str | None = None,
-            adv_type: str | None = None,
-            tab: str | None = None,
-            datapack: str | None = None,
-            has_exp: bool | None = None,
-            has_reward: bool | None = None,
-            has_trophy: bool | None = None,
-            randomize: bool = False,
-            limit: int = 25,
-            excluded_ids: list[int] | None = None,
-            session: AsyncSession = None
-    ) -> Sequence[Self]:
-        stmt = cls._build_adv_search_stmt(title=title, description=description, adv_type=adv_type, tab=tab, datapack=datapack, excluded_ids=excluded_ids,
-                                          has_exp=has_exp, has_reward=has_reward, has_trophy=has_trophy, limit=limit, randomize=randomize)
+    async def search_without_relations(cls, limit: int = 25, session: AsyncSession = None, **adv_filters: Unpack[AdvSearchFilters]) -> Sequence[Self]:
+        stmt = cls._build_adv_search_stmt(**adv_filters, limit=limit)
         result = await session.execute(stmt)
         return result.scalars().all()
 
     @classmethod
     @connection
-    async def search_with_relations(
-            cls, title: str | None = None,
-            description: str | None = None,
-            adv_type: str | None = None,
-            tab: str | None = None,
-            datapack: str | None = None,
-            has_exp: bool | None = None,
-            has_reward: bool | None = None,
-            has_trophy: bool | None = None,
-            randomize: bool = False,
-            limit: int = 25,
-            excluded_ids: list[int] | None = None,
-            session: AsyncSession = None
-    ) -> Sequence[Self]:
-        stmt = cls._build_adv_search_stmt(title=title, description=description, adv_type=adv_type, tab=tab, datapack=datapack, has_exp=has_exp,
-                                          has_reward=has_reward, has_trophy=has_trophy, limit=limit, randomize=randomize, excluded_ids=excluded_ids, load_related=True)
+    async def search_with_relations(cls, limit: int = 25, session: AsyncSession = None, **adv_filters: Unpack[AdvSearchFilters]) -> Sequence[Self]:
+        stmt = cls._build_adv_search_stmt(**adv_filters, limit=limit, load_related=True)
         result = await session.execute(stmt)
         return result.scalars().all()
 
     @classmethod
     @connection
-    async def get_filtered_count(cls, title: str | None = None,
-                                 description: str | None = None,
-                                 adv_type: str | None = None,
-                                 tab: str | None = None,
-                                 datapack: str | None = None,
-                                 has_exp: bool | None = None,
-                                 has_reward: bool | None = None,
-                                 has_trophy: bool | None = None,
-                                 randomize: bool = False,
-                                 excluded_ids: list[str] | None = None,
-                                 session: AsyncSession = None) -> int:
-        filters, _ = cls._build_filters(
-            title=title,
-            description=description,
-            adv_type=adv_type,
-            tab=tab,
-            datapack=datapack,
-            has_exp=has_exp,
-            has_reward=has_reward,
-            has_trophy=has_trophy,
-            randomize=randomize,
-            excluded_ids=excluded_ids
-        )
+    async def get_filtered_count(cls, session: AsyncSession = None, **adv_filters: Unpack[AdvSearchFilters]) -> int:
+        filters, _ = cls._build_filters(**adv_filters)
 
         stmt = select(func.count()).select_from(cls).where(*filters)
         result = await session.execute(stmt)
@@ -234,12 +187,7 @@ class DB_Advancement(Base):
 
     @classmethod
     @connection
-    async def _get_random_column_values(
-            cls,
-            column,
-            limit: int = 25,
-            session: AsyncSession = None
-    ):
+    async def _get_random_column_values(cls, column: InstrumentedAttribute, limit: int = 25, session: AsyncSession = None):
         stmt = select(column).order_by(func.random()).limit(limit)
         result = await session.execute(stmt)
         return result.scalars().all()
@@ -254,23 +202,8 @@ class DB_Advancement(Base):
 
     @classmethod
     @connection
-    async def _search_distinct_column(
-            cls,
-            column,
-            *,
-            title: str | None = None,
-            description: str | None = None,
-            adv_type: str | None = None,
-            tab: str | None = None,
-            datapack: str | None = None,
-            has_exp: bool | None = None,
-            has_reward: bool | None = None,
-            has_trophy: bool | None = None,
-            randomize: bool = False,
-            session: AsyncSession = None
-    ):
-        filters, _ = cls._build_filters(title=title, description=description, adv_type=adv_type, tab=tab, datapack=datapack, has_exp=has_exp, has_reward=has_reward, has_trophy=has_trophy,
-                                        randomize=randomize)
+    async def _search_distinct_column(cls, column: InstrumentedAttribute, session: AsyncSession = None, **adv_filters: Unpack[AdvSearchFilters]):
+        filters, _ = cls._build_filters(**adv_filters)
 
         stmt = select(distinct(column)).where(*filters)
         result = await session.execute(stmt)
@@ -278,23 +211,8 @@ class DB_Advancement(Base):
 
     @classmethod
     @connection
-    async def _search_distinct_column_bool(
-            cls,
-            column,
-            *,
-            title: str | None = None,
-            description: str | None = None,
-            adv_type: str | None = None,
-            tab: str | None = None,
-            datapack: str | None = None,
-            has_exp: bool | None = None,
-            has_reward: bool | None = None,
-            has_trophy: bool | None = None,
-            randomize: bool = False,
-            session: AsyncSession = None
-    ):
-        filters, _ = cls._build_filters(title=title, description=description, adv_type=adv_type, tab=tab, datapack=datapack, has_exp=has_exp, has_reward=has_reward, has_trophy=has_trophy,
-                                        randomize=randomize)
+    async def _search_distinct_column_bool(cls, column: InstrumentedAttribute, session: AsyncSession = None, **adv_filters: Unpack[AdvSearchFilters]):
+        filters, _ = cls._build_filters(**adv_filters)
 
         stmt = select(distinct(case((column.is_not(None), True), else_=False))).where(*filters)
 
@@ -302,52 +220,28 @@ class DB_Advancement(Base):
         return result.scalars().all()
 
     @classmethod
-    async def search_titles(
-            cls, title: str | None = None, description: str | None = None, adv_type: str | None = None, tab: str | None = None,
-            datapack: str | None = None, has_exp: bool | None = None, has_reward: bool | None = None, has_trophy: bool | None = None, randomize: bool = False,
-    ):
-        return await cls._search_distinct_column(cls.title, title=title, description=description, adv_type=adv_type, tab=tab, datapack=datapack,
-                                                 has_exp=has_exp, has_reward=has_reward, has_trophy=has_trophy, randomize=randomize)
+    async def search_titles(cls, **adv_filters: Unpack[AdvSearchFilters]):
+        return await cls._search_distinct_column(column=cls.title, **adv_filters)
 
     @classmethod
-    async def search_descriptions(
-            cls, title: str | None = None, description: str | None = None, adv_type: str | None = None, tab: str | None = None,
-            datapack: str | None = None, has_exp: bool | None = None, has_reward: bool | None = None, has_trophy: bool | None = None, randomize: bool = False,
-    ):
-        return await cls._search_distinct_column(cls.description, title=title, description=description, adv_type=adv_type, tab=tab, datapack=datapack,
-                                                 has_exp=has_exp, has_reward=has_reward, has_trophy=has_trophy, randomize=randomize)
+    async def search_descriptions(cls, **adv_filters: Unpack[AdvSearchFilters]):
+        return await cls._search_distinct_column(column=cls.description, **adv_filters)
 
     @classmethod
-    async def search_tabs(
-            cls, title: str | None = None, description: str | None = None, adv_type: str | None = None, tab: str | None = None,
-            datapack: str | None = None, has_exp: bool | None = None, has_reward: bool | None = None, has_trophy: bool | None = None, randomize: bool = False,
-    ):
-        return await cls._search_distinct_column(cls.tab, title=title, description=description, adv_type=adv_type, tab=tab, datapack=datapack,
-                                                 has_exp=has_exp, has_reward=has_reward, has_trophy=has_trophy, randomize=randomize)
+    async def search_tabs(cls, **adv_filters: Unpack[AdvSearchFilters]):
+        return await cls._search_distinct_column(column=cls.tab, **adv_filters)
 
     @classmethod
-    async def search_types(
-            cls, title: str | None = None, description: str | None = None, adv_type: str | None = None, tab: str | None = None,
-            datapack: str | None = None, has_exp: bool | None = None, has_reward: bool | None = None, has_trophy: bool | None = None, randomize: bool = False,
-    ):
-        return await cls._search_distinct_column(cls.type, title=title, description=description, adv_type=adv_type, tab=tab, datapack=datapack,
-                                                 has_exp=has_exp, has_reward=has_reward, has_trophy=has_trophy, randomize=randomize)
+    async def search_types(cls, **adv_filters: Unpack[AdvSearchFilters]):
+        return await cls._search_distinct_column(column=cls.type, **adv_filters)
 
     @classmethod
-    async def search_datapacks(
-            cls, title: str | None = None, description: str | None = None, adv_type: str | None = None, tab: str | None = None,
-            datapack: str | None = None, has_exp: bool | None = None, has_reward: bool | None = None, has_trophy: bool | None = None, randomize: bool = False,
-    ):
-        return await cls._search_distinct_column(cls.datapack, title=title, description=description, adv_type=adv_type, tab=tab, datapack=datapack,
-                                                 has_exp=has_exp, has_reward=has_reward, has_trophy=has_trophy, randomize=randomize)
+    async def search_datapacks(cls, **adv_filters: Unpack[AdvSearchFilters]):
+        return await cls._search_distinct_column(column=cls.datapack, **adv_filters)
 
     @classmethod
-    async def search_bool_attr(
-            cls, attr, *, title: str | None = None, description: str | None = None, adv_type: str | None = None, tab: str | None = None,
-            datapack: str | None = None, has_exp: bool | None = None, has_reward: bool | None = None, has_trophy: bool | None = None, randomize: bool = False,
-    ):
-        return await cls._search_distinct_column_bool(getattr(cls, attr), title=title, description=description, adv_type=adv_type, tab=tab, datapack=datapack,
-                                                      has_exp=has_exp, has_reward=has_reward, has_trophy=has_trophy, randomize=randomize)
+    async def search_bool_attr(cls, attr: str, **adv_filters: Unpack[AdvSearchFilters]):
+        return await cls._search_distinct_column_bool(column=getattr(cls, attr), **adv_filters)
 
     @classmethod
     @connection
@@ -451,17 +345,17 @@ class DB_Trophy(Base):
     @classmethod
     def _build_filters(cls, name: str):
         name_lower = name.lower()
-        title_col = func.lower(cls.name)
+        name_col = func.lower(cls.name)
 
         relevance = case(
-            (title_col == name_lower, 1),
-            (title_col.like(name_lower + ' %'), 2),
-            (title_col.like(name_lower + '%'), 3),
-            (title_col.like('% ' + name_lower + ' %'), 4),
-            (title_col.like(f"%{name_lower}%"), 5),
+            (name_lower == name_col, 1),
+            (name_col.like(name_lower + ' %'), 2),
+            (name_col.like(name_lower + '%'), 3),
+            (name_col.like('% ' + name_lower + ' %'), 4),
+            (name_col.like(f"%{name_lower}%"), 5),
             else_=6
         )
-        filters = [title_col.like(f"%{name_lower}%")]
+        filters = [name_col.like(f"%{name_lower}%")]
         return filters, relevance
 
     @classmethod

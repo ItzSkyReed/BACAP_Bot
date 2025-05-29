@@ -5,6 +5,7 @@ import BACAP_Parser
 from BACAP_Parser import Parser, Datapack, AdvTypeManager, AdvType, Color, constants, TechnicalAdvancement, cut_namespace, DEFAULT_BACAP_HIDDEN_COLOR
 
 import Database
+from DBGenerator.ActualRequirementsParser import EDActualRequirementsParser
 from DBGenerator.constants import ASSETS_FOLDER, ENCHANTMENTS_WITH_ONE_LEVEL
 from Database import DB_Advancement, DB_AdvancementAltDescriptions, DB_WB_Addon
 from DBGenerator import IconGenerator, WBAddonParser
@@ -40,6 +41,7 @@ def __load_parser():
 
 
 NORMAL_PACKS, COMP_ADDONS = __load_parser()
+ED_Reqs = EDActualRequirementsParser()
 
 
 def __run_async_sync(awaitable):
@@ -155,10 +157,15 @@ def _load_adv_with_rewards(adv: BACAP_Parser.Advancement, datapack_name: str, pa
         wb_db_id = __save_wb_sync(wb_db).id
 
 
+
+    actual_reqs = ED_Reqs.get(adv.title) if 'bacaped' in datapack_name.lower() else None
+
+
     __save_advancement_sync(
         DB_Advancement(
             title=adv.title,
             description=adv.description,
+            actual_requirements=actual_reqs,
             mc_path=adv.mc_path,
             icon=IconGenerator.get_adv_icon(adv.icon, adv.frame),
             type=adv.type.name.replace('_', ' ').title(),

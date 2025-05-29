@@ -35,6 +35,9 @@ class AdvancementEmbed(discord.Embed):
         if advancement.trophy_id:
             self.add_field(name='Trophy', value=advancement.trophy.name)
 
+        if advancement.actual_requirements:
+            self.add_field(name='Actual Requirements:', value=advancement.actual_requirements, inline=False)
+
         if advancement.wb_addon_id:
             addon = advancement.wb_addon
 

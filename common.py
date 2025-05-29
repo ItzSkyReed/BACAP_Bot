@@ -1,3 +1,5 @@
+from abc import ABCMeta
+
 import discord
 
 
@@ -19,3 +21,11 @@ def format_time(value: int) -> str:
 
 def to_title_style(string: str):
     return string.replace("_", " ").title()
+
+class SingletonMeta(ABCMeta):
+    _instances: dict[type, object] = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super().__call__(*args, **kwargs)
+        return cls._instances[cls]

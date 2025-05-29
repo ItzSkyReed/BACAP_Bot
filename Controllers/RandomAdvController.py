@@ -41,7 +41,7 @@ class RandomAdvController(SearchAdvController):
 
         self._update_advancement_view()
 
-        await interaction.edit(embed=self._current_embed, view=self._view, file=self._file)
+        return await interaction.edit(embed=self._current_embed, view=self._view, file=self._file)
 
     def _update_advancement_view(self):
         self._view.remove_item(self._reroll_advancement_button)

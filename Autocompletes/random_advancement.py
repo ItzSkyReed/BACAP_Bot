@@ -13,13 +13,14 @@ def _format_options(context: discord.AutocompleteContext) -> dict:
         "adv_type": context.options.get("adv_type"),
         "tab": context.options.get("tab"),
         "datapack": context.options.get("datapack"),
+        "is_hidden": str_to_bool_or_none(context.options.get("is_hidden")),
         "has_exp": str_to_bool_or_none(context.options.get("has_exp")),
         "has_reward": str_to_bool_or_none(context.options.get("has_reward")),
         "has_trophy": str_to_bool_or_none(context.options.get("has_trophy")),
     }
 
 
-async def _boolean_autocomplete(context: discord.AutocompleteContext, field: Literal['exp_count', 'reward_id', 'trophy_id']):
+async def _boolean_autocomplete(context: discord.AutocompleteContext, field: Literal['is_hidden', 'exp_count', 'reward_id', 'trophy_id']):
     if all(not value for value in context.options.values()):
         return ["True", "False"]
 
@@ -66,6 +67,9 @@ async def datapack_autocomplete(context: discord.AutocompleteContext):
 
     return await DB_Advancement.search_datapacks(**_format_options(context))
 
+
+async def hidden_autocomplete(context: discord.AutocompleteContext):
+    return await _boolean_autocomplete(context, 'is_hidden')
 
 async def exp_autocomplete(context: discord.AutocompleteContext):
     return await _boolean_autocomplete(context, 'exp_count')

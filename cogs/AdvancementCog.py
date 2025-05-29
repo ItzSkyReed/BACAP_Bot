@@ -10,6 +10,7 @@ from common import error_embed, str_to_bool_or_none
 
 class AdvancementCog(commands.Cog):
     random_group = discord.SlashCommandGroup(name='random')
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -79,6 +80,14 @@ class AdvancementCog(commands.Cog):
         autocomplete=random_advancement.datapack_autocomplete
     )
     @discord.option(
+        name="is_hidden",
+        input_type=str,
+        required=False,
+        description="Is advancement hidden?",
+        max_length=32,
+        autocomplete=random_advancement.hidden_autocomplete
+    )
+    @discord.option(
         name="has_exp",
         input_type=str,
         required=False,
@@ -103,8 +112,9 @@ class AdvancementCog(commands.Cog):
         autocomplete=random_advancement.trophy_autocomplete
     )
     async def random_command(self, ctx: discord.ApplicationContext, title: str, description: str, adv_type: str,
-                             tab: str, datapack: str, has_exp: str, has_reward: str, has_trophy: str):
+                             tab: str, datapack: str, is_hidden: str, has_exp: str, has_reward: str, has_trophy: str):
 
+        is_hidden = str_to_bool_or_none(is_hidden)
         has_exp = str_to_bool_or_none(has_exp)
         has_reward = str_to_bool_or_none(has_reward)
         has_trophy = str_to_bool_or_none(has_trophy)
@@ -113,7 +123,7 @@ class AdvancementCog(commands.Cog):
             description = description[:96]
 
         search_params = {"title": title, "description": description, "adv_type": adv_type, "tab": tab, "datapack": datapack,
-                         "has_exp": has_exp, "has_reward": has_reward, "has_trophy": has_trophy}
+                         "is_hidden": is_hidden, "has_exp": has_exp, "has_reward": has_reward, "has_trophy": has_trophy}
 
         adv = await DB_Advancement.search_with_relations(**search_params, limit=1, randomize=True)
 
@@ -123,7 +133,7 @@ class AdvancementCog(commands.Cog):
         suitable_adv_count = await DB_Advancement.get_filtered_count(**search_params)
 
         controller_cls = SearchAdvController if suitable_adv_count == 1 else RandomAdvController
-        controller_args = (adv[0],) if suitable_adv_count == 1 else (adv[0],suitable_adv_count, search_params)
+        controller_args = (adv[0],) if suitable_adv_count == 1 else (adv[0], suitable_adv_count, search_params)
 
         return await controller_cls(*controller_args).send_advancement_view(ctx)
 
