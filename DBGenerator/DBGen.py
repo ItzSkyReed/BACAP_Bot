@@ -6,10 +6,10 @@ from BACAP_Parser import Parser, Datapack, AdvTypeManager, AdvType, Color, const
 
 import Database
 from DBGenerator.ActualRequirementsParser import EDActualRequirementsParser, BACAPActualRequirementsParser
-from DBGenerator.constants import ASSETS_FOLDER, ENCHANTMENTS_WITH_ONE_LEVEL
+from DBGenerator.constants import ASSETS_FOLDER, ENCHANTMENTS_WITH_ONE_LEVEL, BACAP_DATAPACK_NAME, BACAPED_DATAPACK_NAME, BACAP_TERRALITH_NAME, BACAP_NULLSCAPE_NAME, BACAP_AMPLIFIED_NETHER_NAME, \
+    BACAP_HARDCORE_NAME, BACAPED_HARDCORE_NAME
 from Database import DB_Advancement, DB_AdvancementAltDescriptions, DB_WB_Addon
 from DBGenerator import IconGenerator, WBAddonParser
-
 
 def __load_parser():
     task = AdvType(name="task", frames="task", colors=Color("green"))
@@ -26,15 +26,15 @@ def __load_parser():
     manager = AdvTypeManager(task, goal, challenge, super_challenge, root, milestone, advancement_legend)
     terralith_manager = AdvTypeManager(task_terralith, goal, challenge_terralith, super_challenge, root, milestone, advancement_legend)
 
-    bacap = Datapack(name="bacap", path=Path(ASSETS_FOLDER / r"datapacks/bacap"), adv_type_manager=manager, reward_namespace="bacap_rewards", technical_tabs="technical")
-    bacaped = Datapack(name="bacaped", path=Path(ASSETS_FOLDER / "datapacks/bacaped"), adv_type_manager=manager, reward_namespace="bacaped_rewards", technical_tabs="technical")
+    bacap = Datapack(name=BACAP_DATAPACK_NAME, path=Path(ASSETS_FOLDER / r"datapacks/bacap"), adv_type_manager=manager, reward_namespace="bacap_rewards", technical_tabs="technical")
+    bacaped = Datapack(name=BACAPED_DATAPACK_NAME, path=Path(ASSETS_FOLDER / "datapacks/bacaped"), adv_type_manager=manager, reward_namespace="bacaped_rewards", technical_tabs="technical")
 
-    bacap_hardcore = Datapack(name="bacap_hardcore", path=Path(ASSETS_FOLDER / r"datapacks/bacap_hardcore"), adv_type_manager=manager, technical_tabs="technical")
-    bacap_terralith = Datapack(name="bacap_terralith", path=Path(ASSETS_FOLDER / r"datapacks/bacap_terralith"), adv_type_manager=terralith_manager, technical_tabs="technical")
-    bacap_nullscapes = Datapack(name="bacap_nullscapes", path=Path(ASSETS_FOLDER / r"datapacks/bacap_nullscapes"), adv_type_manager=manager, technical_tabs="technical")
-    bacap_amplified_nether = Datapack(name="bacap_amplified_nether", path=Path(ASSETS_FOLDER / r"datapacks/bacap_amplified_nether"), adv_type_manager=manager, technical_tabs="technical")
+    bacap_hardcore = Datapack(name=BACAP_HARDCORE_NAME, path=Path(ASSETS_FOLDER / r"datapacks/bacap_hardcore"), adv_type_manager=manager, technical_tabs="technical")
+    bacap_terralith = Datapack(name=BACAP_TERRALITH_NAME, path=Path(ASSETS_FOLDER / r"datapacks/bacap_terralith"), adv_type_manager=terralith_manager, technical_tabs="technical")
+    bacap_nullscapes = Datapack(name=BACAP_NULLSCAPE_NAME, path=Path(ASSETS_FOLDER / r"datapacks/bacap_nullscapes"), adv_type_manager=manager, technical_tabs="technical")
+    bacap_amplified_nether = Datapack(name=BACAP_AMPLIFIED_NETHER_NAME, path=Path(ASSETS_FOLDER / r"datapacks/bacap_amplified_nether"), adv_type_manager=manager, technical_tabs="technical")
 
-    bacaped_hardcore = Datapack(name="bacaped_hardcore", path=Path(ASSETS_FOLDER / "datapacks/bacaped_hardcore"), adv_type_manager=manager, reward_namespace="bacaped_rewards",
+    bacaped_hardcore = Datapack(name=BACAPED_HARDCORE_NAME, path=Path(ASSETS_FOLDER / "datapacks/bacaped_hardcore"), adv_type_manager=manager, reward_namespace="bacaped_rewards",
                                 technical_tabs="technical")
 
     return Parser(bacap, bacaped), {"hardcore": [bacap_hardcore, bacaped_hardcore], "terralith": [bacap_terralith], "nullscapes": [bacap_nullscapes], "amplified_nether": [bacap_amplified_nether]}
@@ -158,9 +158,9 @@ def _load_adv_with_rewards(adv: BACAP_Parser.Advancement, datapack_name: str, pa
         wb_db_id = __save_wb_sync(wb_db).id
 
 
-    if 'bacaped' in datapack_name.lower():
+    if BACAPED_DATAPACK_NAME in datapack_name:
         actual_reqs = ED_Reqs.get(adv.title)
-    elif 'bacap' in datapack_name.lower():
+    elif BACAP_DATAPACK_NAME in datapack_name:
         actual_reqs = BACAP_Reqs.get(datapack_name=datapack_name, tab_display=adv.tab_display, title=adv.title)
     else:
         actual_reqs = None
@@ -178,8 +178,8 @@ def _load_adv_with_rewards(adv: BACAP_Parser.Advancement, datapack_name: str, pa
             color=adv.color.as_int,
             frame=adv.frame.replace('_', ' ').title(),
             is_hidden=adv.hidden,
-            datapack=datapack_name.replace('_', ' ').title(),
-            is_addon=datapack_name != "bacap",
+            datapack=datapack_name,
+            is_addon=datapack_name != BACAP_DATAPACK_NAME,
             parent_id=parent_id,
             exp_count=adv.exp.value if adv.exp else None,
             trophy_id=trophy_id,

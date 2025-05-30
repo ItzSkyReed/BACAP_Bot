@@ -4,7 +4,7 @@ import requests
 from openpyxl import load_workbook
 
 from common import SingletonMeta
-from DBGenerator.constants import ED_GH_PAGES_URL, BAC_DOC_SHEET_PATH, RIDDLE_ME_THIS_ACTUAL_REQ
+from DBGenerator.constants import ED_GH_PAGES_URL, BAC_DOC_SHEET_PATH, BACAP_TERRALITH_NAME
 
 
 class AbstractActualRequirementsParser(ABC, metaclass=SingletonMeta):
@@ -53,7 +53,7 @@ class BACAPActualRequirementsParser(AbstractActualRequirementsParser):
         self._doc_sheet = load_workbook(filename=BAC_DOC_SHEET_PATH)
 
     def get(self, datapack_name: str, tab_display: str, title: str) -> str | None:
-        if "terralith" in datapack_name.lower():
+        if datapack_name == BACAP_TERRALITH_NAME:
             tab_display = "Terralith"
             start_row = 3
         else:

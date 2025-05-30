@@ -27,7 +27,6 @@ class RandomAdvController(SearchAdvController):
         await super().on_parent_button_click(interaction)
 
     async def on_trophy_button_click(self, interaction: discord.Interaction):
-        self.__clear_reroll_info()
         await super().on_trophy_button_click(interaction)
 
     async def on_reroll_button_click(self, interaction: discord.Interaction):
@@ -49,6 +48,10 @@ class RandomAdvController(SearchAdvController):
 
         if self._suitable_adv_count > 1:
             self._view.add_item(self._reroll_advancement_button)
+
+    def _update_trophy_view(self):
+        self._view.remove_item(self._reroll_advancement_button)
+        super()._update_trophy_view()
 
     async def cleanup(self):
         self._suitable_adv_count = None
