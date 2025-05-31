@@ -1,15 +1,10 @@
 import asyncio
-from pathlib import Path
-
 import BACAP_Parser
-from BACAP_Parser import Parser, Datapack, AdvTypeManager, AdvType, Color, constants, TechnicalAdvancement, cut_namespace, DEFAULT_BACAP_HIDDEN_COLOR, TabNameMapper
+from BACAP_Parser import Parser, Datapack, AdvTypeManager, AdvType, Color, TechnicalAdvancement, cut_namespace, DEFAULT_BACAP_HIDDEN_COLOR
 
 import Database
 from DBGenerator.ActualRequirementsParser import EDActualRequirementsParser, BACAPActualRequirementsParser
-from DBGenerator.constants import ASSETS_FOLDER, ENCHANTMENTS_WITH_ONE_LEVEL, BACAP_DATAPACK_NAME, BACAPED_DATAPACK_NAME, BACAP_TERRALITH_DATAPACK_NAME, BACAP_NULLSCAPE_DATAPACK_NAME, \
-    BACAP_AMPLIFIED_NETHER_DATAPACK_NAME, \
-    BACAP_HARDCORE_DATAPACK_NAME, BACAPED_HARDCORE_DATAPACK_NAME, COMPLETE_COLLECTION_DATAPACK_NAME, CEREAL_DEDICATION_HARDCORE_DATAPACK_NAME, CEREAL_DEDICATION_DATAPACK_NAME, \
-    INCENDIUM_DATAPACK_NAME
+from DBGenerator.constants import *
 from Database import DB_Advancement, DB_AdvancementAltDescriptions, DB_WB_Addon
 from DBGenerator import IconGenerator, WBAddonParser
 
@@ -37,11 +32,7 @@ def __load_parser():
     bacap_nullscapes = Datapack(name=BACAP_NULLSCAPE_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/bacap_nullscapes", adv_type_manager=manager, technical_tabs="technical")
     bacap_amplified_nether = Datapack(name=BACAP_AMPLIFIED_NETHER_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/bacap_amplified_nether", adv_type_manager=manager, technical_tabs="technical")
 
-    bacaped_hardcore = Datapack(name=BACAPED_HARDCORE_DATAPACK_NAME, path=ASSETS_FOLDER / "datapacks/bacaped_hardcore", adv_type_manager=manager, reward_namespace="bacaped_rewards",
-                                technical_tabs="technical")
-
-    incendium = Datapack(name=INCENDIUM_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/incendium", adv_type_manager=manager, technical_tabs="technical",
-                         tab_name_mapper=TabNameMapper({"incendium": "Nether"}))
+    bacaped_hardcore = Datapack(name=BACAPED_HARDCORE_DATAPACK_NAME, path=ASSETS_FOLDER / "datapacks/bacaped_hardcore", adv_type_manager=manager, reward_namespace="bacaped_rewards")
 
     cereal_dedication = Datapack(name=CEREAL_DEDICATION_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/cereal_dedication", adv_type_manager=manager, reward_namespace="bacap_rewards",
                                  technical_tabs="technical")
@@ -53,7 +44,7 @@ def __load_parser():
                                    technical_tabs="technical")
 
     return Parser(bacap, bacaped, cereal_dedication, complete_collection), {"hardcore": [bacap_hardcore, bacaped_hardcore, cereal_dedication_hardcore], "terralith": [bacap_terralith],
-                                                                            "nullscapes": [bacap_nullscapes], "amplified_nether": [bacap_amplified_nether], "incendium": [incendium]}
+                                                                            "nullscapes": [bacap_nullscapes], "amplified_nether": [bacap_amplified_nether]}
 
 
 NORMAL_PACKS, COMP_ADDONS = __load_parser()
