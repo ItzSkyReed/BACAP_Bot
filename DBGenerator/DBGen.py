@@ -32,7 +32,7 @@ def __load_parser():
     bacap_nullscapes = Datapack(name=BACAP_NULLSCAPE_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/bacap_nullscapes", adv_type_manager=manager, technical_tabs="technical")
     bacap_amplified_nether = Datapack(name=BACAP_AMPLIFIED_NETHER_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/bacap_amplified_nether", adv_type_manager=manager, technical_tabs="technical")
 
-    bacaped_hardcore = Datapack(name=BACAPED_HARDCORE_DATAPACK_NAME, path=ASSETS_FOLDER / "datapacks/bacaped_hardcore", adv_type_manager=manager, reward_namespace="bacaped_rewards")
+    bacaped_hardcore = Datapack(name=BACAPED_HARDCORE_DATAPACK_NAME, path=ASSETS_FOLDER / "datapacks/bacaped_hardcore", adv_type_manager=manager, reward_namespace="bacaped_rewards", technical_tabs="technical")
 
     cereal_dedication = Datapack(name=CEREAL_DEDICATION_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/cereal_dedication", adv_type_manager=manager, reward_namespace="bacap_rewards",
                                  technical_tabs="technical")
