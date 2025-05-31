@@ -1,13 +1,12 @@
 import base64
-import json
 from io import BytesIO
 from pathlib import Path
-
+import re
 import BACAP_Parser
 import requests
 from BACAP_Parser import cut_namespace
 from PIL import Image, ImageFilter
-
+from constants import URL_PATTERN
 from DBGenerator.constants import ASSETS_FOLDER, CACHE_FOLDER
 
 DEFAULT_ICON_SIZE = (128, 128)
@@ -87,7 +86,8 @@ def _get_head_hash_value(item_components: dict):
     profile = item_components.get("minecraft:profile") or item_components.get("profile")
     if not profile:
         return None
-    texture_url: str | None = json.loads(base64.b64decode(profile["properties"][0]["value"]).decode())['textures']['SKIN']['url']
+
+    texture_url: str | None = re.search(URL_PATTERN, base64.b64decode(profile["properties"][0]["value"]).decode())[0]
     return texture_url.rsplit('/', 1)[-1]
 
 def _get_item_cache_path(item_id: str, size: tuple[int, int]) -> Path:

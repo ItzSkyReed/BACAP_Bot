@@ -2,14 +2,17 @@ import asyncio
 from pathlib import Path
 
 import BACAP_Parser
-from BACAP_Parser import Parser, Datapack, AdvTypeManager, AdvType, Color, constants, TechnicalAdvancement, cut_namespace, DEFAULT_BACAP_HIDDEN_COLOR
+from BACAP_Parser import Parser, Datapack, AdvTypeManager, AdvType, Color, constants, TechnicalAdvancement, cut_namespace, DEFAULT_BACAP_HIDDEN_COLOR, TabNameMapper
 
 import Database
 from DBGenerator.ActualRequirementsParser import EDActualRequirementsParser, BACAPActualRequirementsParser
-from DBGenerator.constants import ASSETS_FOLDER, ENCHANTMENTS_WITH_ONE_LEVEL, BACAP_DATAPACK_NAME, BACAPED_DATAPACK_NAME, BACAP_TERRALITH_NAME, BACAP_NULLSCAPE_NAME, BACAP_AMPLIFIED_NETHER_NAME, \
-    BACAP_HARDCORE_NAME, BACAPED_HARDCORE_NAME
+from DBGenerator.constants import ASSETS_FOLDER, ENCHANTMENTS_WITH_ONE_LEVEL, BACAP_DATAPACK_NAME, BACAPED_DATAPACK_NAME, BACAP_TERRALITH_DATAPACK_NAME, BACAP_NULLSCAPE_DATAPACK_NAME, \
+    BACAP_AMPLIFIED_NETHER_DATAPACK_NAME, \
+    BACAP_HARDCORE_DATAPACK_NAME, BACAPED_HARDCORE_DATAPACK_NAME, COMPLETE_COLLECTION_DATAPACK_NAME, CEREAL_DEDICATION_HARDCORE_DATAPACK_NAME, CEREAL_DEDICATION_DATAPACK_NAME, \
+    INCENDIUM_DATAPACK_NAME
 from Database import DB_Advancement, DB_AdvancementAltDescriptions, DB_WB_Addon
 from DBGenerator import IconGenerator, WBAddonParser
+
 
 def __load_parser():
     task = AdvType(name="task", frames="task", colors=Color("green"))
@@ -26,18 +29,31 @@ def __load_parser():
     manager = AdvTypeManager(task, goal, challenge, super_challenge, root, milestone, advancement_legend)
     terralith_manager = AdvTypeManager(task_terralith, goal, challenge_terralith, super_challenge, root, milestone, advancement_legend)
 
-    bacap = Datapack(name=BACAP_DATAPACK_NAME, path=Path(ASSETS_FOLDER / r"datapacks/bacap"), adv_type_manager=manager, reward_namespace="bacap_rewards", technical_tabs="technical")
-    bacaped = Datapack(name=BACAPED_DATAPACK_NAME, path=Path(ASSETS_FOLDER / "datapacks/bacaped"), adv_type_manager=manager, reward_namespace="bacaped_rewards", technical_tabs="technical")
+    bacap = Datapack(name=BACAP_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/bacap", adv_type_manager=manager, reward_namespace="bacap_rewards", technical_tabs="technical")
+    bacaped = Datapack(name=BACAPED_DATAPACK_NAME, path=ASSETS_FOLDER / "datapacks/bacaped", adv_type_manager=manager, reward_namespace="bacaped_rewards", technical_tabs="technical")
 
-    bacap_hardcore = Datapack(name=BACAP_HARDCORE_NAME, path=Path(ASSETS_FOLDER / r"datapacks/bacap_hardcore"), adv_type_manager=manager, technical_tabs="technical")
-    bacap_terralith = Datapack(name=BACAP_TERRALITH_NAME, path=Path(ASSETS_FOLDER / r"datapacks/bacap_terralith"), adv_type_manager=terralith_manager, technical_tabs="technical")
-    bacap_nullscapes = Datapack(name=BACAP_NULLSCAPE_NAME, path=Path(ASSETS_FOLDER / r"datapacks/bacap_nullscapes"), adv_type_manager=manager, technical_tabs="technical")
-    bacap_amplified_nether = Datapack(name=BACAP_AMPLIFIED_NETHER_NAME, path=Path(ASSETS_FOLDER / r"datapacks/bacap_amplified_nether"), adv_type_manager=manager, technical_tabs="technical")
+    bacap_hardcore = Datapack(name=BACAP_HARDCORE_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/bacap_hardcore", adv_type_manager=manager, technical_tabs="technical")
+    bacap_terralith = Datapack(name=BACAP_TERRALITH_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/bacap_terralith", adv_type_manager=terralith_manager, technical_tabs="technical")
+    bacap_nullscapes = Datapack(name=BACAP_NULLSCAPE_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/bacap_nullscapes", adv_type_manager=manager, technical_tabs="technical")
+    bacap_amplified_nether = Datapack(name=BACAP_AMPLIFIED_NETHER_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/bacap_amplified_nether", adv_type_manager=manager, technical_tabs="technical")
 
-    bacaped_hardcore = Datapack(name=BACAPED_HARDCORE_NAME, path=Path(ASSETS_FOLDER / "datapacks/bacaped_hardcore"), adv_type_manager=manager, reward_namespace="bacaped_rewards",
+    bacaped_hardcore = Datapack(name=BACAPED_HARDCORE_DATAPACK_NAME, path=ASSETS_FOLDER / "datapacks/bacaped_hardcore", adv_type_manager=manager, reward_namespace="bacaped_rewards",
                                 technical_tabs="technical")
 
-    return Parser(bacap, bacaped), {"hardcore": [bacap_hardcore, bacaped_hardcore], "terralith": [bacap_terralith], "nullscapes": [bacap_nullscapes], "amplified_nether": [bacap_amplified_nether]}
+    incendium = Datapack(name=INCENDIUM_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/incendium", adv_type_manager=manager, technical_tabs="technical",
+                         tab_name_mapper=TabNameMapper({"incendium": "Nether"}))
+
+    cereal_dedication = Datapack(name=CEREAL_DEDICATION_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/cereal_dedication", adv_type_manager=manager, reward_namespace="bacap_rewards",
+                                 technical_tabs="technical")
+
+    cereal_dedication_hardcore = Datapack(name=CEREAL_DEDICATION_HARDCORE_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/cereal_dedication_hardcore", adv_type_manager=manager,
+                                          technical_tabs="technical")
+
+    complete_collection = Datapack(name=COMPLETE_COLLECTION_DATAPACK_NAME, path=ASSETS_FOLDER / r"datapacks/complete_collection", adv_type_manager=manager, reward_namespace="bacap_rewards",
+                                   technical_tabs="technical")
+
+    return Parser(bacap, bacaped, cereal_dedication, complete_collection), {"hardcore": [bacap_hardcore, bacaped_hardcore, cereal_dedication_hardcore], "terralith": [bacap_terralith],
+                                                                            "nullscapes": [bacap_nullscapes], "amplified_nether": [bacap_amplified_nether], "incendium": [incendium]}
 
 
 NORMAL_PACKS, COMP_ADDONS = __load_parser()
@@ -101,6 +117,7 @@ def _find_advancement_by_mc_path(mc_path: str, datapack: BACAP_Parser.Datapack |
 
     return None
 
+
 def __format_enchantments(obj: dict[str, int]):
     enchantments = {}
 
@@ -157,14 +174,12 @@ def _load_adv_with_rewards(adv: BACAP_Parser.Advancement, datapack_name: str, pa
             wb_db.ed_seconds = wb_data["ED"][1]
         wb_db_id = __save_wb_sync(wb_db).id
 
-
     if BACAPED_DATAPACK_NAME in datapack_name:
         actual_reqs = ED_Reqs.get(adv.title)
     elif BACAP_DATAPACK_NAME in datapack_name:
         actual_reqs = BACAP_Reqs.get(datapack_name=datapack_name, tab_display=adv.tab_display, title=adv.title)
     else:
         actual_reqs = None
-
 
     __save_advancement_sync(
         DB_Advancement(
@@ -311,6 +326,7 @@ def _process_addon(datapack, comp_addon_type: str):
     for adv in datapack.advancement_manager.filtered_iterator():
         _process_addon_advancement(adv, datapack, comp_addon_type)
 
+
 def load_normal():
     for datapack_name, datapack in NORMAL_PACKS.datapacks_dict.items():
         for adv in datapack.advancement_manager.filtered_iterator():
@@ -318,6 +334,7 @@ def load_normal():
                 continue
 
             _save_advancement_with_parents(adv, datapack_name)
+
 
 def load_comp_addon():
     for comp_addon_type, addons in COMP_ADDONS.items():
