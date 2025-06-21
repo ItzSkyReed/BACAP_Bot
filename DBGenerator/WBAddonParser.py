@@ -4,8 +4,8 @@ from BACAP_Parser import cut_namespace, Advancement
 
 from DBGenerator.constants import ASSETS_FOLDER
 
-WB_ADDON_BACAP_PATH = ASSETS_FOLDER / r"wb_addon/bacap/data/bc_wb/function/reward"
-WB_ADDON_BACAPED_PATH = ASSETS_FOLDER / r"wb_addon/ed/data/bc_wb/function/reward"
+WB_ADDON_BACAP_PATH = ASSETS_FOLDER / r"wb_addon/data/bc_wb/function/rewards/bacap/vanilla/normal"
+WB_ADDON_BACAPED_PATH = ASSETS_FOLDER /  r"wb_addon/data/bc_wb/function/rewards/bacaped/vanilla/normal"
 
 def __read_reward(path: Path) -> tuple[float | None, int | None]:
     file_text = path.read_text(encoding="utf-8").splitlines()[0].split() # We read text, split it to separate lines, then take first line, split it to different "words"
