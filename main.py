@@ -1,7 +1,7 @@
 import discord
 
 import Database
-from DBGenerator.DBGen import load_normal, load_comp_addon
+from DBGenerator.__main__ import load_normal, load_comp_addon
 
 import asyncio
 import os
@@ -31,7 +31,7 @@ def get_token():
     return token
 
 if __name__ == "__main__":
-    if not "--test" in sys.argv:
+    if "--test" in sys.argv:
         pre_loading()
 
 

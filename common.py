@@ -8,8 +8,7 @@ def error_embed(title: str, description: str = ""):
 
 
 def str_to_bool_or_none(value: str | None) -> bool | None:
-    return {"True": True, "False": False}.get(value, None)
-
+    return None if value is None else value == "True"
 
 def format_float(value: int | float) -> float | int:
     return int(value) if value.is_integer() else value

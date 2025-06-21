@@ -28,9 +28,9 @@ FRAME_IMAGES_MAP["goal"] = __load_and_resize_frame("goal_frame.png")
 FRAME_IMAGES_MAP["challenge"] = __load_and_resize_frame("challenge_frame.png")
 
 def _fetch_item_image(item_id: str) -> bytes:
-    return (ASSETS_FOLDER / "items" / f"minecraft_{item_id}.png").read_bytes()
+    return (ASSETS_FOLDER / "items" / f"{item_id}.png").read_bytes()
 
-def _fetch_player_head_image(head_hash_value, size: int = DEFAULT_ICON_SIZE[0]) -> bytes:
+def _fetch_player_head_image(head_hash_value: str, size: int = DEFAULT_ICON_SIZE[0]) -> bytes:
     response = requests.get(fr"https://mc-heads.net/head/{head_hash_value}/{size}.png")
     response.raise_for_status()
     return response.content
@@ -96,10 +96,10 @@ def _get_item_cache_path(item_id: str, size: tuple[int, int]) -> Path:
 def _get_item_frame_cache_path(item_id: str, frame: str, size: tuple[int, int]) -> Path:
     return CACHE_FOLDER / f"frames_{size[0]}_{size[1]}" / f"{frame}_{item_id}.webp"
 
-def _get_head_frame_cache_path(head_hash, frame: str, size: tuple[int, int]) -> Path:
+def _get_head_frame_cache_path(head_hash: str, frame: str, size: tuple[int, int]) -> Path:
     return CACHE_FOLDER / f"frames_{size[0]}_{size[1]}" / f"{frame}_{head_hash}.webp"
 
-def _get_head_cache_path(head_hash_value, size: tuple[int, int]) -> Path:
+def _get_head_cache_path(head_hash_value: str, size: tuple[int, int]) -> Path:
     return CACHE_FOLDER / f"heads_{size[0]}_{size[1]}" / f"{head_hash_value}.webp"
 
 def _compose_item_on_frame(item_image: Image.Image, frame_image: Image.Image) -> Image.Image:

@@ -166,11 +166,7 @@ cython_debug/
 db_old/*
 *.db
 test.py
-assets/cache/*
-assets/datapacks/*
-assets/items/*
-assets/wb_addon/*
-assets/misc/*
+assets/cache/
 
 
 

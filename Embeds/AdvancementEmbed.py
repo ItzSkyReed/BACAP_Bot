@@ -20,6 +20,7 @@ class AdvancementEmbed(discord.Embed):
         self.add_field(name='Tab', value=advancement.tab)
 
         if advancement.parent_id:
+            # noinspection PyTypeChecker
             self.add_field(name='Parent', value=advancement.parent.title)
 
         self.add_field(name='Hidden?', value="Yes" if advancement.is_hidden else "No")
@@ -31,9 +32,11 @@ class AdvancementEmbed(discord.Embed):
             self.add_field(name='Addon', value=advancement.datapack)
 
         if advancement.reward_id:
+            # noinspection PyTypeChecker
             self.add_field(name='Reward', value=f"{to_title_style(advancement.reward.item_id)}: {advancement.reward.amount}")
 
         if advancement.trophy_id:
+            # noinspection PyTypeChecker
             self.add_field(name='Trophy', value=advancement.trophy.name)
 
         if advancement.actual_requirements:
@@ -45,12 +48,16 @@ class AdvancementEmbed(discord.Embed):
             lines = [f"{'':>6}{'Blocks':>10}{'Expand time':>13}"]
 
             if addon.bacap_blocks or addon.bacap_seconds:
+                # noinspection PyTypeChecker
                 bacap_blocks = format_float(addon.bacap_blocks)
+                # noinspection PyTypeChecker
                 bacap_seconds = format_float(addon.bacap_seconds)
                 lines.append(f"{'BACAP:':>6}{bacap_blocks:>10}{format_time(bacap_seconds):>13}")
 
             if addon.ed_blocks or addon.ed_seconds:
+                # noinspection PyTypeChecker
                 ed_blocks = format_float(addon.ed_blocks)
+                # noinspection PyTypeChecker
                 ed_seconds = format_float(addon.ed_seconds)
                 lines.append(f"{'ED:':>6}{ed_blocks:>10}{format_time(ed_seconds):>13}")
 
@@ -71,7 +78,7 @@ class AdvancementEmbed(discord.Embed):
         alt_desc = advancement.alt_descriptions
         if not advancement.alt_descriptions_id or not alt_desc:
             return
-
+        # noinspection PyTypeChecker
         for column in alt_desc.__table__.columns:
             if column.name == "id":
                 continue

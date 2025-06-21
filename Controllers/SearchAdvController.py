@@ -74,6 +74,7 @@ class SearchAdvController(SupportsCleanup):
 
         # File (Generally, Icon of embed)
         if self._advancement.icon:
+            # noinspection PyTypeChecker
             self._file = discord.File(BytesIO(self._advancement.trophy.icon), filename=f"{self._advancement.trophy.id}.png")
         else:
             self._file = None
@@ -86,7 +87,6 @@ class SearchAdvController(SupportsCleanup):
     async def send_trophy_view(self, ctx: discord.ApplicationContext):
         self._update_trophy_view()
         await ctx.respond(embed=self._current_embed, view=self._view, file=self._file)
-        self._author = ctx.author
         self._original_message = await ctx.interaction.original_response()
 
     async def on_parent_button_click(self, interaction: discord.Interaction):

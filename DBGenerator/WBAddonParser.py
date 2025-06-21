@@ -14,9 +14,9 @@ def __read_reward(path: Path) -> tuple[float | None, int | None]:
     except ValueError: # TODO better regex solution
         return None, None
 
-def get_blocks_seconds(adv: Advancement) -> dict[str: tuple[float, int]]:
-    adv_wb_bacap_path = WB_ADDON_BACAP_PATH / f"{cut_namespace(adv.reward_mcpath)}.mcfunction"
-    adv_wb_ed_path = WB_ADDON_BACAPED_PATH / f"{cut_namespace(adv.reward_mcpath)}.mcfunction"
+def get_blocks_seconds(adv: Advancement) -> dict[str, tuple[float, int]]:
+    adv_wb_bacap_path = WB_ADDON_BACAP_PATH / f"{cut_namespace(adv.mc_path)}.mcfunction"
+    adv_wb_ed_path = WB_ADDON_BACAPED_PATH / f"{cut_namespace(adv.mc_path)}.mcfunction"
 
     data = {}
 

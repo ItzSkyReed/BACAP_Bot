@@ -6,7 +6,7 @@ import discord
 from Database import DB_Advancement
 from common import to_title_style
 
-
+# noinspection PyTypeChecker
 def format_enchantments(enchantments: Mapping[str, int]) -> str:
     lines = []
 
@@ -15,6 +15,7 @@ def format_enchantments(enchantments: Mapping[str, int]) -> str:
         lines.append(f"{to_title_style(enchantment_id)}{level_str}")
 
     return '\n'.join(lines)
+
 
 
 class TrophyEmbed(discord.Embed):
@@ -26,13 +27,14 @@ class TrophyEmbed(discord.Embed):
 
         if advancement.trophy.icon:
             self.set_thumbnail(url=f"attachment://{advancement.trophy.id}.png")
-
+        # noinspection PyTypeChecker
         self.add_field(name="Item:", value=to_title_style(advancement.trophy.item_id), inline=False)
 
         if advancement.trophy.unbreakable:
             self.add_field(name="Unbreakable", value="")
 
         if advancement.trophy.enchantments:
-            self.add_field(name="Enchantments:", value=format_enchantments(advancement.trophy.enchantments), inline=False)
+            # noinspection PyTypeChecker
+            self.add_field(name="Enchantments:", value=format_enchantments(advancement.trophy.enchantments), inline=False) #
 
         self.add_field(name='Awarded for:', value=advancement.title, inline=False)
