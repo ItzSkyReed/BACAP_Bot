@@ -22,7 +22,7 @@ class AdvancementCog(commands.Cog):
         input_type=str,
         required=True,
         description="The title of the advancement.",
-        max_length=32,
+        max_length=50,
         autocomplete=search_advancement.title_autocomplete
     )
     async def search_command(self, ctx: discord.ApplicationContext, title: str):
@@ -42,7 +42,7 @@ class AdvancementCog(commands.Cog):
         input_type=str,
         required=False,
         description="The title of the advancement.",
-        max_length=32,
+        max_length=50,
         autocomplete=random_advancement.title_autocomplete
     )
     @discord.option(

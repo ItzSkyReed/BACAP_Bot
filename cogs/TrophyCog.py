@@ -22,7 +22,7 @@ class TrophyCog(commands.Cog):
         input_type=str,
         required=False,
         description="The name of the trophy.",
-        max_length=32,
+        max_length=50,
         autocomplete=random_trophy.name_autocomplete
     )
     @discord.option(
