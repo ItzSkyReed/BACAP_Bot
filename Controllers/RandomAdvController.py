@@ -6,7 +6,7 @@ from Database import DB_Advancement
 from common import error_embed
 
 
-class RandomAdvController(SearchAdvController):
+class RandomAdvController(SearchController):
     def __init__(self, advancement: DB_Advancement, suitable_adv_count: int, search_params: dict[str, str]):
         super().__init__(advancement)
 
@@ -25,9 +25,6 @@ class RandomAdvController(SearchAdvController):
     async def on_parent_button_click(self, interaction: discord.Interaction):
         self.__clear_reroll_info()
         await super().on_parent_button_click(interaction)
-
-    async def on_trophy_button_click(self, interaction: discord.Interaction):
-        await super().on_trophy_button_click(interaction)
 
     async def on_reroll_button_click(self, interaction: discord.Interaction):
         if not self._is_author_interaction(interaction):

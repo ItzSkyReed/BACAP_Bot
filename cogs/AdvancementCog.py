@@ -31,7 +31,7 @@ class AdvancementCog(commands.Cog):
         if not adv:
             return await ctx.respond(embed=error_embed(title="Advancement not found!", description="Advancements with such title are not found."), ephemeral=True)
 
-        return await SearchAdvController(adv[0]).send_advancement_view(ctx)
+        return await SearchController(adv[0]).send_advancement_view(ctx)
 
     @random_group.command(
         name="advancement",
@@ -90,7 +90,7 @@ class AdvancementCog(commands.Cog):
         name="has_exp",
         input_type=str,
         required=False,
-        description="Does the advancement has an experience reward.",
+        description="Does the advancement have an experience reward?",
         max_length=32,
         autocomplete=random_advancement.exp_autocomplete
     )
@@ -98,7 +98,7 @@ class AdvancementCog(commands.Cog):
         name="has_reward",
         input_type=str,
         required=False,
-        description="Does the advancement has an item reward.",
+        description="Does the advancement have an item reward?",
         max_length=32,
         autocomplete=random_advancement.reward_autocomplete
     )
@@ -106,7 +106,7 @@ class AdvancementCog(commands.Cog):
         name="has_trophy",
         input_type=str,
         required=False,
-        description="Does the advancement has a trophy reward.",
+        description="Does the advancement have a trophy reward?",
         max_length=32,
         autocomplete=random_advancement.trophy_autocomplete
     )
@@ -131,10 +131,11 @@ class AdvancementCog(commands.Cog):
 
         suitable_adv_count = await DB_Advancement.get_filtered_count(**search_params)
 
-        controller_cls = SearchAdvController if suitable_adv_count == 1 else RandomAdvController
-        controller_args = (adv[0],) if suitable_adv_count == 1 else (adv[0], suitable_adv_count, search_params)
+        if suitable_adv_count == 1:
+            return await SearchController(adv[0]).send_advancement_view(ctx)
 
-        return await controller_cls(*controller_args).send_advancement_view(ctx)
+        return await RandomAdvController(adv[0], suitable_adv_count, search_params).send_advancement_view(ctx)
+
 
 
 def setup(bot: commands.Bot):

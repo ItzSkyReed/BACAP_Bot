@@ -12,7 +12,10 @@ from Protocols.SupportsCleanup import SupportsCleanup
 from Views.CleanupView import CleanupView
 from common import error_embed
 
-class SearchAdvController(SupportsCleanup):
+class SearchController(SupportsCleanup):
+    """
+    Used for advancement/trophy search
+    """
     def __init__(self, advancement: DB_Advancement):
         self._original_message: discord.InteractionMessage | None = None
         self._advancement = advancement

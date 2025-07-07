@@ -2,6 +2,7 @@ import discord
 
 from Database import DB_Advancement
 
+__all__ = ['title_autocomplete']
 
 async def title_autocomplete(context: discord.AutocompleteContext):
     if not context.options["title"]:

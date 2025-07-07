@@ -1,20 +1,18 @@
-import discord
-
-import Database
-from DBGenerator.__main__ import load_normal, load_comp_addon
-
 import asyncio
 import os
 import sys
 
+import discord
+from pycord.multicog import Bot
 from dotenv import load_dotenv
 
-from DBGenerator.DatabaseController import DatabaseController
-
+from Database import init_db
+from DBGenerator import load_normal, load_comp_addon
+from DatabaseController import DatabaseController
 
 def pre_loading():
     DatabaseController.update_current_db()
-    asyncio.run(Database.init_db())
+    asyncio.run(init_db())
     load_normal()
     load_comp_addon()
 
@@ -35,7 +33,7 @@ if __name__ == "__main__":
         pre_loading()
 
 
-    bot = discord.Bot(intents=discord.Intents.all())
+    bot = Bot(intents=discord.Intents.all())
     bot.load_extension("cogs.AdvancementCog")
     bot.load_extension("cogs.TrophyCog")
 

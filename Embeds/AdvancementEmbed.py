@@ -40,7 +40,7 @@ class AdvancementEmbed(discord.Embed):
             self.add_field(name='Trophy', value=advancement.trophy.name)
 
         if advancement.actual_requirements:
-            self.add_field(name='Actual Requirements:', value=advancement.actual_requirements, inline=False)
+            self._add_actual_requirements(advancement.actual_requirements)
 
         if advancement.wb_addon_id:
             addon = advancement.wb_addon
@@ -66,6 +66,15 @@ class AdvancementEmbed(discord.Embed):
                 value="```\n" + "\n".join(lines) + "\n```",
                 inline=False
             )
+
+    def _add_actual_requirements(self, string: str) -> None:
+        if len(string) <= 1024:
+            self.add_field(name='Actual Requirements:', value=string, inline=False)
+            return
+
+        actual_req_list = [string[i:i + 1024] for i in range(0, len(string), 1024)]
+        for i, req in enumerate(actual_req_list):
+            self.add_field(name='Actual Requirements:' if i == 0 else '', value=req, inline=False)
 
     @staticmethod
     def _get_exp_emoji(exp_count: int) -> str:
