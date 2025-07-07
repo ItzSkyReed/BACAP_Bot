@@ -5,6 +5,8 @@ import discord
 from Database import DB_Advancement
 from common import str_to_bool_or_none
 
+__all__ = ['title_autocomplete', 'description_autocomplete', 'tab_autocomplete', 'datapack_autocomplete', 'type_autocomplete', 'hidden_autocomplete', 'exp_autocomplete', 'reward_autocomplete',
+           'trophy_autocomplete']
 
 def _format_options(context: discord.AutocompleteContext) -> dict:
     return {

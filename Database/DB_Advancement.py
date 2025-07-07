@@ -1,16 +1,17 @@
-from typing import Unpack, Optional, Self, TypedDict, TYPE_CHECKING
+from typing import TypedDict, Self, Optional, TYPE_CHECKING, Unpack
 
 from sqlalchemy import select, distinct, case, ForeignKey, Boolean, Integer, String, BLOB, func, Select, Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import InstrumentedAttribute, mapped_column, Mapped, relationship, selectinload
+from sqlalchemy.orm import mapped_column, Mapped, relationship, selectinload, InstrumentedAttribute
 
-from Database.Base import connection, Base
+from .Base import connection, Base
 
 if TYPE_CHECKING:
     from .DB_Trophy import DB_Trophy
     from .DB_Reward import DB_Reward
     from .DB_AdvancementAltDescriptions import DB_AdvancementAltDescriptions
     from .DB_WB_Addon import DB_WB_Addon
+
 
 class AdvSearchFilters(TypedDict, total=False):
     title: str
@@ -123,7 +124,7 @@ class DB_Advancement(Base):
         return filters, relevance
 
     @classmethod
-    def _build_adv_search_stmt(cls, limit: int = 25, load_related: bool = False, **adv_filters: Unpack[AdvSearchFilters]) -> Select[tuple[Self]]:
+    def _build_search_stmt(cls, limit: int = 25, load_related: bool = False, **adv_filters: Unpack[AdvSearchFilters]) -> Select[tuple[Self]]:
         filters, relevance = cls._build_filters(**adv_filters)
 
         stmt = select(cls).where(*filters)
@@ -149,14 +150,14 @@ class DB_Advancement(Base):
     @classmethod
     @connection
     async def search_without_relations(cls, limit: int = 25, session: AsyncSession = None, **adv_filters: Unpack[AdvSearchFilters]) -> Sequence[Self]:
-        stmt = cls._build_adv_search_stmt(**adv_filters, limit=limit)
+        stmt = cls._build_search_stmt(**adv_filters, limit=limit)
         result = await session.execute(stmt)
         return result.scalars().all()
 
     @classmethod
     @connection
     async def search_with_relations(cls, limit: int = 25, session: AsyncSession = None, **adv_filters: Unpack[AdvSearchFilters]) -> Sequence[Self]:
-        stmt = cls._build_adv_search_stmt(**adv_filters, limit=limit, load_related=True)
+        stmt = cls._build_search_stmt(**adv_filters, limit=limit, load_related=True)
         result = await session.execute(stmt)
         return result.scalars().all()
 

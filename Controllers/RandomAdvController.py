@@ -1,7 +1,7 @@
 import discord
 
-from Buttons.RerollAdvancementButton import RerollAdvancementButton
-from Controllers.SearchAdvController import SearchAdvController
+from Buttons import RerollAdvancementButton
+from Controllers.SearchController import SearchController
 from Database import DB_Advancement
 from common import error_embed
 

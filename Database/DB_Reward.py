@@ -2,7 +2,7 @@ from sqlalchemy import String, Integer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column
 
-from Database.Base import Base, connection
+from .Base import Base, connection
 
 
 class DB_Reward(Base):

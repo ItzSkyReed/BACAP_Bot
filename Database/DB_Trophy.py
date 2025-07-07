@@ -1,13 +1,11 @@
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Self, Optional, TypedDict, Unpack
 
 from sqlalchemy import select, case, Boolean, Integer, String, BLOB, func, JSON
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import mapped_column, Mapped, relationship, selectinload
 
-from Database.Base import connection, Base
-
-if TYPE_CHECKING:
-    from .DB_Advancement import DB_Advancement
+from .Base import connection, Base
+from .DB_Advancement import DB_Advancement
 
 class DB_Trophy(Base):
     __tablename__ = "Trophy"

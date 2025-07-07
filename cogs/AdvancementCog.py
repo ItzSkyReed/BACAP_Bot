@@ -2,9 +2,8 @@ import discord
 from discord.ext import commands
 
 from Autocompletes import random_advancement, search_advancement
-from Controllers.RandomAdvController import RandomAdvController
 from Database import DB_Advancement
-from Controllers.SearchAdvController import SearchAdvController
+from Controllers import SearchController, RandomAdvController
 from common import error_embed, str_to_bool_or_none
 
 
